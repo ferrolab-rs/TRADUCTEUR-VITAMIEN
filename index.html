@@ -3,11 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#04060c">
     <title>Pont de Lumière</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Serif:wght@300;400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Serif:wght@300;400&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #04060c;
@@ -17,6 +18,8 @@
             --vn-light: #f87171;
             --text: #eef2ff;
             --muted: rgba(238, 242, 255, 0.38);
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
 
         * {
@@ -26,8 +29,7 @@
             padding: 0;
         }
 
-        html,
-        body {
+        html, body {
             height: 100%;
             overflow: hidden;
             touch-action: none;
@@ -50,6 +52,7 @@
             inset: 0;
             pointer-events: none;
             z-index: 0;
+            will-change: transform;
         }
 
         .aurora-fr {
@@ -60,6 +63,7 @@
             height: 60%;
             background: radial-gradient(ellipse at 50% 100%, rgba(37, 99, 235, 0.14) 0%, rgba(37, 99, 235, 0.06) 35%, transparent 65%);
             animation: breathe 7s ease-in-out infinite;
+            will-change: transform, opacity;
         }
 
         .aurora-vn {
@@ -70,20 +74,12 @@
             height: 60%;
             background: radial-gradient(ellipse at 50% 0%, rgba(220, 38, 38, 0.14) 0%, rgba(220, 38, 38, 0.06) 35%, transparent 65%);
             animation: breathe 9s ease-in-out infinite reverse;
+            will-change: transform, opacity;
         }
 
         @keyframes breathe {
-
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-
-            50% {
-                transform: scale(1.12);
-                opacity: 0.65;
-            }
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.65; }
         }
 
         /* ══ ÉCRAN CLÉ API ══ */
@@ -96,8 +92,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 32px 28px;
-            gap: 24px;
+            padding: calc(32px + var(--safe-top)) 28px calc(32px + var(--safe-bottom));
+            gap: 22px;
         }
 
         #screen-key .gem {
@@ -105,8 +101,9 @@
             height: 12px;
             background: white;
             border-radius: 50%;
-            box-shadow: 0 0 16px white, 0 0 40px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 16px white, 0 0 40px rgba(255,255,255,0.5);
             animation: gem-pulse 3s ease-in-out infinite;
+            will-change: transform, box-shadow;
         }
 
         #screen-key h1 {
@@ -119,10 +116,10 @@
         }
 
         #screen-key p {
-            font-size: 0.82rem;
+            font-size: 0.84rem;
             color: var(--muted);
             text-align: center;
-            line-height: 1.7;
+            line-height: 1.75;
             font-weight: 300;
             max-width: 300px;
         }
@@ -140,31 +137,31 @@
 
         #input-key {
             width: 100%;
-            padding: 14px 48px 14px 18px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 12px;
+            padding: 16px 52px 16px 18px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.13);
+            border-radius: 14px;
             color: var(--text);
             font-family: 'Noto Serif', serif;
-            font-size: 0.82rem;
+            font-size: 0.9rem;
             letter-spacing: 0.5px;
             outline: none;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, background 0.3s;
             -webkit-user-select: text;
             user-select: text;
             touch-action: auto;
         }
 
         #input-key:focus {
-            border-color: rgba(96, 165, 250, 0.5);
+            border-color: rgba(96,165,250,0.55);
+            background: rgba(255,255,255,0.09);
         }
 
         #input-key::placeholder {
-            color: rgba(238, 242, 255, 0.2);
-            font-size: 0.75rem;
+            color: rgba(238,242,255,0.22);
+            font-size: 0.8rem;
         }
 
-        /* Bouton œil pour voir/cacher */
         .eye-btn {
             position: absolute;
             right: 14px;
@@ -173,7 +170,7 @@
             background: none;
             border: none;
             cursor: pointer;
-            padding: 4px;
+            padding: 8px;
             color: var(--muted);
             touch-action: auto;
         }
@@ -188,66 +185,32 @@
         #btn-save-key {
             width: 100%;
             max-width: 340px;
-            padding: 15px;
+            padding: 17px;
             background: radial-gradient(circle at 40% 35%, #5b9cf6, #1d4ed8 60%, #1e3a8a);
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             color: white;
             font-family: 'Cinzel', serif;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             letter-spacing: 2px;
             cursor: pointer;
-            box-shadow: 0 0 24px rgba(37, 99, 235, 0.5), 0 0 55px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 0 24px rgba(37,99,235,0.5), 0 0 55px rgba(37,99,235,0.2);
             transition: transform 0.15s, box-shadow 0.3s;
             touch-action: auto;
+            -webkit-tap-highlight-color: transparent;
         }
 
         #btn-save-key:active {
             transform: scale(0.96);
+            box-shadow: 0 0 40px rgba(37,99,235,0.7), 0 0 80px rgba(37,99,235,0.3);
         }
 
         #key-error {
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             color: var(--vn-light);
-            min-height: 18px;
+            min-height: 20px;
             text-align: center;
-        }
-
-        /* Bouton répétition */
-        .replay-btn {
-            position: absolute;
-            top: 50%;
-            right: -35px;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.3s, background 0.2s;
-            pointer-events: none;
-        }
-
-        .panel.has-last-audio .replay-btn {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .replay-btn:active {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-50%) scale(0.9);
-        }
-
-        .replay-icon {
-            width: 16px;
-            height: 16px;
-            fill: white;
+            line-height: 1.5;
         }
 
         /* ══ APP PRINCIPALE ══ */
@@ -263,79 +226,101 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between; /* Stabilise le haut et le bas */
-            padding: 30px 20px;
+            justify-content: flex-start;
             position: relative;
             z-index: 1;
-            gap: 15px;
-            overflow: hidden; /* Empêche les fuites visuelles */
+            overflow: hidden;
+            height: 50vh;
+        }
+
+        .panel-fr {
+            justify-content: flex-end;
+            padding-bottom: calc(28px + var(--safe-bottom));
         }
 
         .panel-vn {
             transform: rotate(180deg);
+            justify-content: flex-end;
+            padding-bottom: calc(28px + var(--safe-top));
         }
 
         .lang-label {
             position: absolute;
-            top: 14px;
+            top: 22px;
+            left: 50%;
+            transform: translateX(-50%);
             font-family: 'Cinzel', serif;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             letter-spacing: 3.5px;
             text-transform: uppercase;
             color: var(--muted);
             display: flex;
             align-items: center;
             gap: 7px;
+            z-index: 10;
             transition: color 0.3s;
         }
 
         .panel.recording .lang-label {
-            color: rgba(238, 242, 255, 0.78);
+            color: rgba(238,242,255,0.8);
         }
 
-        /* Bouton reset clé */
+        /* ══ RESET KEY (discret mais accessible) ══ */
         .reset-key-btn {
             position: absolute;
-            bottom: 12px;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
             font-family: 'Cinzel', serif;
-            font-size: 0.48rem;
+            font-size: 0.52rem;
             letter-spacing: 2px;
-            color: rgba(238, 242, 255, 0.15);
+            color: rgba(238,242,255,0.18);
             background: none;
             border: none;
             cursor: pointer;
-            padding: 4px 8px;
+            padding: 10px 20px; /* grande zone tactile, texte discret */
             touch-action: auto;
+            transition: color 0.3s;
+        }
+
+        .panel-fr .reset-key-btn {
+            bottom: calc(10px + var(--safe-bottom));
         }
 
         .reset-key-btn:active {
-            color: rgba(238, 242, 255, 0.5);
+            color: rgba(238,242,255,0.55);
         }
 
-        /* ══ TEXT ══ */
-        .display-area {
-            text-align: center;
-            font-size: clamp(1.05rem, 3.5vw, 1.35rem);
-            font-weight: 300;
-            line-height: 1.6;
-            max-width: 92%;
-            flex: 1; /* Occupe tout l'espace central disponible */
+        /* ══ ZONE TEXTE ══ */
+        .display-area-wrapper {
+            flex: 1;
+            width: 100%;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow-y: auto; /* Permet le scroll si le texte est long */
-            padding: 10px 5px;
-            scrollbar-width: none; /* Cache la scrollbar sur Firefox */
-            -ms-overflow-style: none; /* Cache la scrollbar sur IE/Edge */
+            overflow: hidden;
+            margin: 50px 0 120px 0;
+            position: relative;
         }
 
-        .display-area::-webkit-scrollbar {
-            display: none; /* Cache la scrollbar sur Chrome/Safari */
+        .display-area {
+            text-align: center;
+            font-size: clamp(1.05rem, 4vw, 1.4rem);
+            font-weight: 300;
+            line-height: 1.55;
+            max-width: 88%;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding: 8px 12px;
+            max-height: 100%;
+            transition: opacity 0.25s;
         }
 
-        .display-area.dimmed {
-            opacity: 0;
-        }
+        .display-area::-webkit-scrollbar { display: none; }
+
+        .display-area.dimmed { opacity: 0; }
 
         .tw-cursor {
             display: inline-block;
@@ -347,27 +332,64 @@
             animation: blink 0.75s step-end infinite;
         }
 
-        @keyframes blink {
-            50% {
-                opacity: 0;
-            }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* ══ BOUTON REPLAY (repositionné, accessible) ══ */
+        .replay-btn {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: rgba(238,242,255,0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s, background 0.2s, color 0.2s;
+            pointer-events: none;
+            touch-action: auto;
+        }
+
+        .panel.has-last-audio .replay-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .replay-btn:active {
+            background: rgba(255,255,255,0.18);
+            color: white;
+        }
+
+        .replay-icon {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
         }
 
         /* ══ WAVEFORM ══ */
         .wave-canvas {
             display: block;
-            width: 220px;
-            height: 40px;
+            width: 200px;
+            height: 36px;
+            flex-shrink: 0;
         }
 
         /* ══ ORB ══ */
         .orb-wrapper {
             position: relative;
-            width: 88px;
-            height: 88px;
+            width: 92px;
+            height: 92px;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
+            margin: 10px 0 6px;
         }
 
         .halo {
@@ -375,25 +397,14 @@
             border-radius: 50%;
             border: 1px solid transparent;
             transition: opacity 0.3s;
+            will-change: transform, opacity;
         }
 
-        .halo-1 {
-            inset: -12px;
-            opacity: 0.25;
-        }
+        .halo-1 { inset: -12px; opacity: 0.25; }
+        .halo-2 { inset: -22px; opacity: 0.12; }
 
-        .halo-2 {
-            inset: -22px;
-            opacity: 0.12;
-        }
-
-        .panel-fr .halo {
-            border-color: var(--fr-light);
-        }
-
-        .panel-vn .halo {
-            border-color: var(--vn-light);
-        }
+        .panel-fr .halo { border-color: var(--fr-light); }
+        .panel-vn .halo { border-color: var(--vn-light); }
 
         .arc {
             position: absolute;
@@ -402,16 +413,17 @@
             border: 2px solid transparent;
             opacity: 0;
             transition: opacity 0.3s;
+            will-change: transform, opacity;
         }
 
         .panel-fr .arc {
             border-top-color: var(--fr-light);
-            border-right-color: rgba(96, 165, 250, 0.3);
+            border-right-color: rgba(96,165,250,0.3);
         }
 
         .panel-vn .arc {
             border-top-color: var(--vn-light);
-            border-right-color: rgba(248, 113, 113, 0.3);
+            border-right-color: rgba(248,113,113,0.3);
         }
 
         .panel.recording .arc {
@@ -419,11 +431,7 @@
             animation: spin 1.2s linear infinite;
         }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .panel.recording .halo-1 {
             opacity: 0.55;
@@ -436,15 +444,8 @@
         }
 
         @keyframes halo-pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.18);
-            }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.18); }
         }
 
         .btn-record {
@@ -454,71 +455,52 @@
             border: none;
             cursor: pointer;
             position: relative;
-            z-index: 1000 !important; /* Priorité maximale */
+            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.15s ease, box-shadow 0.3s ease;
+            transition: transform 0.12s ease, box-shadow 0.3s ease, opacity 0.3s;
             outline: none;
-            touch-action: none !important; /* Désactive tout geste parasite Android */
+            touch-action: none;
             -webkit-user-select: none;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            will-change: transform;
         }
 
-        .btn-record:active {
-            transform: scale(0.91);
-        }
+        .btn-record:active { transform: scale(0.9); }
 
         .btn-fr {
             background: radial-gradient(circle at 38% 32%, #5b9cf6, #1d4ed8 60%, #1e3a8a);
-            box-shadow: 0 0 24px rgba(37, 99, 235, 0.6), 0 0 55px rgba(37, 99, 235, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 24px rgba(37,99,235,0.6), 0 0 55px rgba(37,99,235,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
         }
 
         .btn-vn {
             background: radial-gradient(circle at 38% 32%, #f87171, #b91c1c 60%, #7f1d1d);
-            box-shadow: 0 0 24px rgba(220, 38, 38, 0.6), 0 0 55px rgba(220, 38, 38, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 24px rgba(220,38,38,0.6), 0 0 55px rgba(220,38,38,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
         }
 
-        .panel-fr.recording .btn-fr {
-            animation: orb-pulse-fr 1.6s ease-in-out infinite;
-        }
-
-        .panel-vn.recording .btn-vn {
-            animation: orb-pulse-vn 1.6s ease-in-out infinite;
-        }
+        .panel-fr.recording .btn-fr { animation: orb-pulse-fr 1.6s ease-in-out infinite; }
+        .panel-vn.recording .btn-vn { animation: orb-pulse-vn 1.6s ease-in-out infinite; }
 
         @keyframes orb-pulse-fr {
-
-            0%,
-            100% {
-                box-shadow: 0 0 30px rgba(37, 99, 235, 0.7), 0 0 70px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            }
-
-            50% {
-                box-shadow: 0 0 52px rgba(37, 99, 235, 1.0), 0 0 110px rgba(37, 99, 235, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            }
+            0%, 100% { box-shadow: 0 0 30px rgba(37,99,235,0.7), 0 0 70px rgba(37,99,235,0.25), inset 0 1px 0 rgba(255,255,255,0.2); }
+            50% { box-shadow: 0 0 52px rgba(37,99,235,1), 0 0 110px rgba(37,99,235,0.5), inset 0 1px 0 rgba(255,255,255,0.2); }
         }
 
         @keyframes orb-pulse-vn {
-
-            0%,
-            100% {
-                box-shadow: 0 0 30px rgba(220, 38, 38, 0.7), 0 0 70px rgba(220, 38, 38, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            }
-
-            50% {
-                box-shadow: 0 0 52px rgba(220, 38, 38, 1.0), 0 0 110px rgba(220, 38, 38, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            }
+            0%, 100% { box-shadow: 0 0 30px rgba(220,38,38,0.7), 0 0 70px rgba(220,38,38,0.25), inset 0 1px 0 rgba(255,255,255,0.2); }
+            50% { box-shadow: 0 0 52px rgba(220,38,38,1), 0 0 110px rgba(220,38,38,0.5), inset 0 1px 0 rgba(255,255,255,0.2); }
         }
 
         .mic-icon {
             width: 28px;
             fill: white;
-            filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4));
             pointer-events: none;
         }
 
+        /* ══ PROCESSING RING ══ */
         .processing-ring {
             position: absolute;
             inset: -14px;
@@ -527,30 +509,25 @@
             opacity: 0;
             transition: opacity 0.3s;
             z-index: 3;
+            will-change: transform, opacity;
         }
 
-        .panel-fr .processing-ring {
-            border-color: rgba(96, 165, 250, 0.55);
-        }
-
-        .panel-vn .processing-ring {
-            border-color: rgba(248, 113, 113, 0.55);
-        }
+        .panel-fr .processing-ring { border-color: rgba(96,165,250,0.55); }
+        .panel-vn .processing-ring { border-color: rgba(248,113,113,0.55); }
 
         .panel.processing .processing-ring {
             opacity: 1;
             animation: spin 2.2s linear infinite;
         }
 
-        .panel.processing .btn-record {
-            opacity: 0.55;
-        }
+        .panel.processing .btn-record { opacity: 0.5; }
 
         .panel.processing .arc {
             opacity: 0 !important;
             animation: none !important;
         }
 
+        /* ══ STATUS ══ */
         .status {
             font-size: 0.68rem;
             color: var(--muted);
@@ -558,11 +535,10 @@
             min-height: 18px;
             font-style: italic;
             transition: color 0.3s;
+            flex-shrink: 0;
         }
 
-        .panel.recording .status {
-            color: rgba(238, 242, 255, 0.72);
-        }
+        .panel.recording .status { color: rgba(238,242,255,0.75); }
 
         /* ══ DIVIDER ══ */
         .divider {
@@ -580,7 +556,7 @@
             position: absolute;
             width: 100%;
             height: 1px;
-            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.06) 20%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.06) 80%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 20%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.06) 80%, transparent 100%);
         }
 
         .divider-gem {
@@ -590,41 +566,41 @@
             border-radius: 50%;
             position: relative;
             z-index: 1;
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 0 22px rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 8px rgba(255,255,255,0.9), 0 0 22px rgba(255,255,255,0.4);
             animation: gem-pulse 3.2s ease-in-out infinite;
+            will-change: transform, box-shadow;
         }
 
         @keyframes gem-pulse {
-
-            0%,
-            100% {
-                box-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 0 22px rgba(255, 255, 255, 0.4);
-                transform: scale(1);
-            }
-
-            50% {
-                box-shadow: 0 0 16px white, 0 0 40px rgba(255, 255, 255, 0.65);
-                transform: scale(1.35);
-            }
+            0%, 100% { box-shadow: 0 0 8px rgba(255,255,255,0.9), 0 0 22px rgba(255,255,255,0.4); transform: scale(1); }
+            50% { box-shadow: 0 0 16px white, 0 0 40px rgba(255,255,255,0.65); transform: scale(1.35); }
         }
 
-        /* ══ DEBUG CONSOLE ══ */
-        #debug-console {
+        /* ══ TOAST FEEDBACK ══ */
+        #toast {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            max-height: 120px;
-            background: rgba(0, 0, 0, 0.85);
-            color: #10b981;
-            font-family: monospace;
-            font-size: 10px;
-            padding: 8px;
-            overflow-y: auto;
-            z-index: 9999;
-            display: none;
+            bottom: calc(24px + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 0.75rem;
+            color: var(--text);
+            letter-spacing: 1px;
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
             pointer-events: none;
-            border-top: 1px solid #10b981;
+            white-space: nowrap;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
     </style>
 </head>
@@ -636,18 +612,17 @@
         <div class="aurora-fr"></div>
     </div>
 
-    <div id="debug-console"></div>
+    <!-- ══ TOAST ══ -->
+    <div id="toast"></div>
 
     <!-- ══ ÉCRAN SAISIE CLÉ API ══ -->
     <div id="screen-key">
         <div class="gem"></div>
         <h1>PONT DE LUMIÈRE</h1>
-        <p>Entre ta clé API <a href="https://openrouter.ai/keys" target="_blank">OpenRouter</a> pour activer le
-            traducteur.<br>Elle sera sauvegardée sur cet appareil uniquement.</p>
+        <p>Entre ta clé <a href="https://openrouter.ai/keys" target="_blank">OpenRouter</a> pour activer le traducteur.<br>Elle restera sur cet appareil uniquement.</p>
 
         <div class="key-input-wrapper">
-            <input id="input-key" type="password" placeholder="sk-or-v1-..." autocomplete="off" autocorrect="off"
-                spellcheck="false" />
+            <input id="input-key" type="password" placeholder="sk-or-v1-..." autocomplete="off" autocorrect="off" spellcheck="false" />
             <button class="eye-btn" id="eye-btn" type="button">
                 <svg id="eye-icon" viewBox="0 0 24 24">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -666,22 +641,21 @@
         <!-- PANNEAU VN (haut, retourné) -->
         <div class="panel panel-vn" id="panel-vn">
             <div class="lang-label">🇻🇳 &nbsp;Tiếng Việt</div>
-            <div class="display-area-wrapper" style="position:relative;">
+            <div class="display-area-wrapper">
                 <div class="display-area" id="text-vn">Nhấn giữ để nói</div>
-                <button class="replay-btn" onclick="replayAudio('vn')" title="Nghe lại">
+                <button class="replay-btn" id="replay-vn" title="Nghe lại" aria-label="Nghe lại">
                     <svg class="replay-icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
                 </button>
             </div>
-            <canvas class="wave-canvas" id="wave-vn" width="220" height="40"></canvas>
+            <canvas class="wave-canvas" id="wave-vn" width="200" height="36"></canvas>
             <div class="orb-wrapper">
                 <div class="halo halo-2"></div>
                 <div class="halo halo-1"></div>
                 <div class="arc"></div>
-                <button class="btn-record btn-vn" id="btn-vn">
+                <button class="btn-record btn-vn" id="btn-vn" aria-label="Enregistrer en vietnamien">
                     <svg class="mic-icon" viewBox="0 0 24 24">
                         <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
-                        <path
-                            d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
                     </svg>
                 </button>
                 <div class="processing-ring"></div>
@@ -699,72 +673,61 @@
         <!-- PANNEAU FR (bas) -->
         <div class="panel panel-fr" id="panel-fr">
             <div class="lang-label">🇫🇷 &nbsp;Français</div>
-            <div class="display-area-wrapper" style="position:relative;">
+            <div class="display-area-wrapper">
                 <div class="display-area" id="text-fr">Maintenir pour parler</div>
-                <button class="replay-btn" onclick="replayAudio('fr')" title="Réécouter">
+                <button class="replay-btn" id="replay-fr" title="Réécouter" aria-label="Réécouter">
                     <svg class="replay-icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
                 </button>
             </div>
-            <canvas class="wave-canvas" id="wave-fr" width="220" height="40"></canvas>
+            <canvas class="wave-canvas" id="wave-fr" width="200" height="36"></canvas>
             <div class="orb-wrapper">
                 <div class="halo halo-2"></div>
                 <div class="halo halo-1"></div>
                 <div class="arc"></div>
-                <button class="btn-record btn-fr" id="btn-fr">
+                <button class="btn-record btn-fr" id="btn-fr" aria-label="Enregistrer en français">
                     <svg class="mic-icon" viewBox="0 0 24 24">
                         <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
-                        <path
-                            d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
                     </svg>
                 </button>
                 <div class="processing-ring"></div>
             </div>
             <div class="status" id="status-fr">Maintenir pour parler</div>
             <button class="reset-key-btn" onclick="resetKey()">⚙ CLÉ API</button>
-            <button class="reset-key-btn" style="right: 20px; left: auto;" onclick="testAPI()">🧪 TEST API</button>
         </div>
 
     </div>
 
     <script>
-        // ══ DEBUG LOGGER ══
-        function log(msg, isErr = false) {
-            const consoleEl = document.getElementById('debug-console');
-            consoleEl.style.display = 'block';
-            const div = document.createElement('div');
-            div.textContent = `> ${msg}`;
-            if (isErr) div.style.color = '#f87171';
-            consoleEl.appendChild(div);
-            consoleEl.scrollTop = consoleEl.scrollHeight;
-            console.log(msg);
-        }
-        window.onerror = (m, s, l, c, e) => log(`${m} (${l}:${c})`, true);
-
-        if (!window.isSecureContext) {
-            setTimeout(() => log("ATTENTION: Contexte non sécurisé (Besoin de HTTPS ou localhost)", true), 1000);
-        }
-
         // ══════════════════════════════════════
         //  CONFIG
         // ══════════════════════════════════════
-        const OR_URL = "https://openrouter.ai/api/v1";
-        const MODEL_STT = "openai/whisper-large-v3-turbo";
-        const MODEL_TRL = "google/gemini-2.5-flash-lite";
-        const MODEL_TTS = "openai/gpt-4o-mini-tts-2025-12-15";
-        const LS_KEY = "pontdelumiere_apikey";
+        const OR_URL     = "https://openrouter.ai/api/v1";
+        const MODEL_STT  = "openai/whisper-large-v3-turbo";
+        const MODEL_TRL  = "google/gemini-2.5-flash-lite";
+        const MODEL_TTS  = "openai/gpt-4o-mini-tts-2025-12-15";
+        const LS_KEY     = "pontdelumiere_apikey";
 
-        let API_KEY = "";
-        let lastAudio = { fr: null, vn: null };
+        let API_KEY      = "";
+        let lastAudio    = { fr: null, vn: null };
         let currentAudio = null;
+
+        // ══════════════════════════════════════
+        //  TOAST
+        // ══════════════════════════════════════
+        let toastTimer = null;
+        function showToast(msg, duration = 2800) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => el.classList.remove('show'), duration);
+        }
 
         // ══════════════════════════════════════
         //  GESTION CLÉ API
         // ══════════════════════════════════════
         function initApp() {
-            log("Initialisation App");
-            // Écouteur global pour tester si le tactile fonctionne
-            document.addEventListener('touchstart', () => { if (!activeMode) log("Touch global détecté"); }, { passive: true });
-            
             const saved = localStorage.getItem(LS_KEY);
             if (saved && saved.startsWith("sk-or")) {
                 API_KEY = saved;
@@ -785,18 +748,13 @@
             drawIdle('fr');
             drawIdle('vn');
 
-            // Pré-demande du micro et déblocage du son
             try {
-                log("Initialisation Micro & Audio...");
                 micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                
-                // Petit trick pour débloquer le son sur iOS/Android
-                const unlockAudio = new Audio();
-                unlockAudio.play().catch(() => {}); 
-                
-                log("✓ Micro et Audio débloqués");
+                // Déblocage audio Android/iOS
+                const unlock = new Audio();
+                unlock.play().catch(() => {});
             } catch (err) {
-                log("⚠ Erreur initialisation: " + err.message, true);
+                showToast('⚠ Micro inaccessible — vérifie les permissions');
             }
         }
 
@@ -808,33 +766,20 @@
             showKeyScreen();
         }
 
-        // Bouton sauvegarder clé
         document.getElementById("btn-save-key").addEventListener("click", () => {
             const val = document.getElementById("input-key").value.trim();
             const errEl = document.getElementById("key-error");
-            
-            if (!val) {
-                errEl.textContent = "⚠ Entre une clé pour continuer";
-                return;
-            }
-            
+            if (!val) { errEl.textContent = "⚠ Entre une clé pour continuer"; return; }
             if (!val.startsWith("sk-or")) {
-                errEl.innerHTML = "⚠ Cette clé n'est pas une clé OpenRouter.<br>Elle doit commencer par <strong>sk-or-...</strong>";
-                errEl.style.color = "#f87171";
+                errEl.innerHTML = "⚠ Clé invalide — elle doit commencer par <strong>sk-or-…</strong>";
                 return;
             }
-            
             API_KEY = val;
-            try {
-                localStorage.setItem(LS_KEY, val);
-                showApp();
-            } catch (e) {
-                // Si localStorage est bloqué (mode privé strict), on laisse quand même l'app se lancer pour la session
-                showApp();
-            }
+            try { localStorage.setItem(LS_KEY, val); } catch (_) {}
+            showApp();
         });
 
-        // Bouton œil — voir/cacher la clé
+        // Bouton œil
         let keyVisible = false;
         document.getElementById("eye-btn").addEventListener("click", () => {
             keyVisible = !keyVisible;
@@ -844,7 +789,6 @@
                 : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
         });
 
-        // Valider avec Entrée
         document.getElementById("input-key").addEventListener("keydown", e => {
             if (e.key === "Enter") document.getElementById("btn-save-key").click();
         });
@@ -852,14 +796,14 @@
         // ══════════════════════════════════════
         //  STATE
         // ══════════════════════════════════════
-        let mediaRecorder = null;
-        let audioChunks = [];
-        let activeMode = null;
-        let isButtonPressed = false; // Suivi de l'état du bouton
-        let micStream = null;
-        let audioCtx = null;
-        let analyser = null;
-        let rafId = null;
+        let mediaRecorder  = null;
+        let audioChunks    = [];
+        let activeMode     = null;
+        let isButtonPressed = false;
+        let micStream      = null;
+        let audioCtx       = null;
+        let analyser       = null;
+        let rafId          = null;
 
         const COLORS = { fr: '#60a5fa', vn: '#f87171' };
 
@@ -894,19 +838,16 @@
                 rafId = requestAnimationFrame(draw);
                 analyser.getByteTimeDomainData(buf);
                 ctx.clearRect(0, 0, W, H);
-
                 const grad = ctx.createLinearGradient(0, 0, W, 0);
                 grad.addColorStop(0, 'transparent');
                 grad.addColorStop(0.12, color);
                 grad.addColorStop(0.88, color);
                 grad.addColorStop(1, 'transparent');
-
                 ctx.beginPath();
                 ctx.strokeStyle = grad;
                 ctx.lineWidth = 2.2;
-                ctx.shadowBlur = 12;
+                ctx.shadowBlur = 10;
                 ctx.shadowColor = color;
-
                 const slice = W / buf.length;
                 buf.forEach((v, i) => {
                     const y = (v / 128.0) * (H / 2);
@@ -932,36 +873,27 @@
             isButtonPressed = true;
             activeMode = mode;
 
-            // Feedback immédiat pour rassurer l'utilisateur
-            setStatus(mode, mode === 'fr' ? 'Initialisation...' : 'Đang khởi tạo...');
+            setStatus(mode, mode === 'fr' ? 'Initialisation…' : 'Đang khởi tạo…');
             panel(mode).classList.add('recording');
 
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                setStatus(mode, '⚠ Navigateur non supporté ou non sécurisé (besoin de HTTPS)');
+            if (!navigator.mediaDevices?.getUserMedia) {
+                setStatus(mode, '⚠ Navigateur non supporté (HTTPS requis)');
                 panel(mode).classList.remove('recording');
                 activeMode = null;
                 return;
             }
 
             try {
-                // Utilise le flux déjà ouvert s'il est valide
                 if (!micStream || !micStream.active) {
-                    log("Réactivation micro...");
                     micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
                 }
-                
-                // Si l'utilisateur a déjà relâché le bouton pendant l'attente du micro
                 if (!isButtonPressed) {
                     panel(mode).classList.remove('recording');
                     activeMode = null;
                     return;
                 }
-
-                // Vibration Android si supportée
-                if (navigator.vibrate) navigator.vibrate(40);
-                log("Micro prêt");
+                if (navigator.vibrate) navigator.vibrate(35);
             } catch (err) {
-                log("Erreur micro: " + err.message, true);
                 setStatus(mode, '⚠ Micro inaccessible');
                 panel(mode).classList.remove('recording');
                 activeMode = null;
@@ -973,37 +905,25 @@
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 }
                 if (audioCtx.state === 'suspended') await audioCtx.resume();
-                log("AudioContext: " + audioCtx.state);
 
                 analyser = audioCtx.createAnalyser();
                 audioCtx.createMediaStreamSource(micStream).connect(analyser);
                 startWaveLoop(mode);
 
-                // Détection du format supporté (ordre de préférence pour Android/iOS)
                 const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg', 'audio/wav'];
                 const supportedType = types.find(t => MediaRecorder.isTypeSupported(t)) || '';
-                
                 mediaRecorder = new MediaRecorder(micStream, supportedType ? { mimeType: supportedType } : {});
                 audioChunks = [];
-                
-                mediaRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) audioChunks.push(e.data); };
-                mediaRecorder.onerror = e => console.error("Erreur MediaRecorder:", e.error);
-                mediaRecorder.onstop = () => {
-                    log("Recording stop");
-                    // On ne coupe plus le micStream ici pour garder la permission active
-                    processAudio();
-                };
-                
-                mediaRecorder.start();
-                log("MediaRecorder démarré (" + supportedType + ")");
 
-                panel(mode).classList.add('recording');
-                setStatus(mode, mode === 'fr' ? 'Enregistrement...' : 'Đang ghi âm...');
+                mediaRecorder.ondataavailable = e => { if (e.data?.size > 0) audioChunks.push(e.data); };
+                mediaRecorder.onerror = e => console.error("MediaRecorder:", e.error);
+                mediaRecorder.onstop = () => processAudio();
+                mediaRecorder.start();
+
+                setStatus(mode, mode === 'fr' ? 'Enregistrement…' : 'Đang ghi âm…');
             } catch (err) {
-                console.error("Erreur démarrage MediaRecorder:", err);
                 setStatus(mode, '⚠ Erreur d\'initialisation');
                 panel(mode).classList.remove('recording');
-                if (micStream) micStream.getTracks().forEach(t => t.stop());
                 activeMode = null;
             }
         }
@@ -1011,12 +931,9 @@
         function stopRecording(mode) {
             if (activeMode !== mode) return;
             isButtonPressed = false;
-            log("Relâchement bouton");
-            
-            if (navigator.vibrate) navigator.vibrate(20);
+            if (navigator.vibrate) navigator.vibrate(18);
 
             if (!mediaRecorder || mediaRecorder.state === 'inactive') {
-                log("Recorder inactif");
                 activeMode = null;
                 stopWaveLoop(mode);
                 panel(mode).classList.remove('recording');
@@ -1027,42 +944,38 @@
             stopWaveLoop(mode);
             panel(mode).classList.remove('recording');
             panel(mode).classList.add('processing');
-            setStatus(mode, mode === 'fr' ? 'Traduction...' : 'Đang dịch...');
+            setStatus(mode, mode === 'fr' ? 'Traduction…' : 'Đang dịch…');
         }
 
         // ══════════════════════════════════════
-        //  PIPELINE : Whisper → Gemini Flash-Lite
+        //  PIPELINE : Whisper → Gemini → TTS
         // ══════════════════════════════════════
         async function processAudio() {
             const mode = activeMode;
             if (!mode) return;
-            const mimeType = mediaRecorder ? mediaRecorder.mimeType : 'audio/webm';
+            const mimeType = mediaRecorder?.mimeType || 'audio/webm';
             const blob = new Blob(audioChunks, { type: mimeType });
-            
-            log(`Audio: ${blob.size} bytes, ${mimeType}`);
 
             if (blob.size < 500) {
-                log("Audio trop court", true);
                 setStatus(mode, mode === 'fr' ? 'Trop court, réessaie' : 'Quá ngắn, thử lại');
                 panel(mode).classList.remove('processing');
-                resetStatus(3000);
+                resetStatus(2800);
                 activeMode = null;
                 return;
             }
 
             try {
-                // ÉTAPE 1 — Whisper STT via OpenRouter
-                const reader = new FileReader();
-                const base64Promise = new Promise(resolve => {
-                    reader.onloadend = () => resolve(reader.result.split(',')[1]);
-                    reader.readAsDataURL(blob);
+                // ÉTAPE 1 — Whisper STT
+                const base64Audio = await new Promise(resolve => {
+                    const r = new FileReader();
+                    r.onloadend = () => resolve(r.result.split(',')[1]);
+                    r.readAsDataURL(blob);
                 });
-                const base64Audio = await base64Promise;
                 const ext = mimeType.split('/')[1].split(';')[0] || 'webm';
 
                 const r1 = await fetch(`${OR_URL}/audio/transcriptions`, {
                     method: 'POST',
-                    headers: { 
+                    headers: {
                         'Authorization': `Bearer ${API_KEY}`,
                         'Content-Type': 'application/json',
                         'HTTP-Referer': window.location.protocol === 'file:' ? 'https://localhost' : window.location.href,
@@ -1070,32 +983,26 @@
                     },
                     body: JSON.stringify({
                         model: MODEL_STT,
-                        input_audio: {
-                            data: base64Audio,
-                            format: ext === 'mp4' ? 'm4a' : ext // OpenRouter préfère m4a pour mp4 audio
-                        }
+                        input_audio: { data: base64Audio, format: ext === 'mp4' ? 'm4a' : ext }
                     })
                 });
-                if (!r1.ok) {
-                    const errorText = await r1.text();
-                    throw new Error(`Whisper ${r1.status}: ${errorText}`);
-                }
+                if (!r1.ok) throw new Error(`Whisper ${r1.status}`);
                 const { text: stt } = await r1.json();
-                if (!stt || !stt.trim()) throw new Error('Transcription vide');
+                if (!stt?.trim()) throw new Error('Transcription vide');
 
                 fadeText(`text-${mode}`, stt);
 
-                // ÉTAPE 2 — Gemini 2.5 Flash-Lite
+                // ÉTAPE 2 — Gemini traduction
                 const isFR = mode === 'fr';
                 const srcLang = isFR ? 'français' : 'vietnamien';
                 const tgtLang = isFR ? 'vietnamien' : 'français';
 
                 const r2 = await fetch(`${OR_URL}/chat/completions`, {
                     method: 'POST',
-                    headers: { 
-                        'Authorization': `Bearer ${API_KEY}`, 
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
                         'Content-Type': 'application/json',
-                        'HTTP-Referer': window.location.href,
+                        'HTTP-Referer': window.location.protocol === 'file:' ? 'https://localhost' : window.location.href,
                         'X-Title': 'Pont de Lumière'
                     },
                     body: JSON.stringify({
@@ -1105,8 +1012,8 @@
                                 role: 'system',
                                 content: `Tu es un interprète expert ${srcLang}/${tgtLang}. Traduis vers le ${tgtLang}.
 ${isFR
-                                        ? 'Utilise des pronoms vietnamiens naturels et polis (Anh/Chị/Em/Tôi) adaptés à un dialogue touriste-local.'
-                                        : 'Formule une traduction naturelle et fluide en français courant.'}
+    ? 'Utilise des pronoms vietnamiens naturels et polis (Anh/Chị/Em/Tôi) adaptés à un dialogue touriste-local.'
+    : 'Formule une traduction naturelle et fluide en français courant.'}
 Réponds UNIQUEMENT avec la traduction. Aucune explication. Aucun guillemet.`
                             },
                             { role: 'user', content: stt }
@@ -1127,6 +1034,7 @@ Réponds UNIQUEMENT avec la traduction. Aucune explication. Aucun guillemet.`
             } catch (err) {
                 console.error(err);
                 setStatus(mode, '⚠ Erreur — vérifie ta clé API');
+                showToast('⚠ ' + (err.message || 'Erreur réseau'));
             } finally {
                 panel(mode).classList.remove('processing');
                 activeMode = null;
@@ -1134,44 +1042,12 @@ Réponds UNIQUEMENT avec la traduction. Aucune explication. Aucun guillemet.`
             }
         }
 
-        async function testAPI() {
-            log("Test de connexion OpenRouter...");
-            try {
-                const r = await fetch(`${OR_URL}/chat/completions`, {
-                    method: 'POST',
-                    headers: { 
-                        'Authorization': `Bearer ${API_KEY}`, 
-                        'Content-Type': 'application/json',
-                        'HTTP-Referer': window.location.protocol === 'file:' ? 'https://localhost' : window.location.href,
-                        'X-Title': 'Pont de Lumière'
-                    },
-                    body: JSON.stringify({
-                        model: MODEL_TRL,
-                        messages: [{ role: 'user', content: 'Say hello' }]
-                    })
-                });
-                if (r.ok) {
-                    log("✓ Connexion API OK !");
-                    alert("✓ Connexion OpenRouter réussie !");
-                } else {
-                    const txt = await r.text();
-                    log("✖ Erreur API: " + r.status, true);
-                    alert("✖ Erreur OpenRouter : " + txt);
-                }
-            } catch (err) {
-                log("✖ Erreur réseau: " + err.message, true);
-                alert("✖ Erreur réseau : " + err.message);
-            }
-        }
-
         // ══════════════════════════════════════
-        //  SYNTHÈSE VOCALE (OPENAI TTS)
+        //  TTS
         // ══════════════════════════════════════
         async function speak(text, lang) {
             if (!text) return;
-            log(`TTS (${lang}): ${text.substring(0, 30)}...`);
 
-            // Préparation du fallback (voix système)
             const fallback = () => {
                 const u = new SpeechSynthesisUtterance(text);
                 u.lang = lang === 'fr' ? 'fr-FR' : 'vi-VN';
@@ -1195,61 +1071,38 @@ Réponds UNIQUEMENT avec la traduction. Aucune explication. Aucun guillemet.`
                     })
                 });
 
-                if (!response.ok) {
-                    const errTxt = await response.text();
-                    throw new Error(`API Error ${response.status}: ${errTxt}`);
-                }
+                if (!response.ok) throw new Error(`TTS ${response.status}`);
 
-                // Extraction brute des données
                 const buffer = await response.arrayBuffer();
-                if (buffer.byteLength < 100) throw new Error("Audio vide ou trop court");
+                if (buffer.byteLength < 100) throw new Error("Audio vide");
 
-                // Création manuelle d'un Blob MP3 certifié
                 const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
-                
-                const reader = new FileReader();
                 const dataUrl = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
                     reader.onloadend = () => resolve(reader.result);
                     reader.onerror = reject;
                     reader.readAsDataURL(audioBlob);
                 });
 
-                log(`✓ Audio HD prêt (${audioBlob.size} octets)`);
-                
                 lastAudio[lang] = dataUrl;
                 panel(lang).classList.add('has-last-audio');
 
                 currentAudio = new Audio();
                 currentAudio.src = dataUrl;
-                
-                // On tente la lecture
-                const playPromise = currentAudio.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        log("▶ Lecture voix HD OK");
-                    }).catch(e => {
-                        log("⚠ Blocage lecture mobile, fallback...", true);
-                        fallback();
-                    });
-                }
+                const p = currentAudio.play();
+                if (p) p.catch(() => fallback());
 
             } catch (err) {
-                log("✖ Erreur voix HD: " + err.message, true);
-                log("Utilisation voix système...");
+                console.error('TTS:', err);
                 fallback();
             }
         }
 
         function replayAudio(lang) {
-            if (lastAudio[lang]) {
-                if (currentAudio) currentAudio.pause();
-                currentAudio = new Audio(lastAudio[lang]);
-                currentAudio.play().catch(() => {
-                    log("Réessai voix système pour répétition...");
-                    // On ne peut pas facilement répéter la voix système sans le texte original ici, 
-                    // mais on essaie au moins de relancer l'audio HD s'il existe.
-                });
-            }
+            if (!lastAudio[lang]) return;
+            if (currentAudio) currentAudio.pause();
+            currentAudio = new Audio(lastAudio[lang]);
+            currentAudio.play().catch(() => {});
         }
 
         // ══════════════════════════════════════
@@ -1278,14 +1131,14 @@ Réponds UNIQUEMENT avec la traduction. Aucune explication. Aucun guillemet.`
                         clearInterval(tick);
                         setTimeout(() => cursor.remove(), 900);
                     }
-                }, 26);
+                }, 24);
             }, 230);
         }
 
         // ══════════════════════════════════════
         //  HELPERS
         // ══════════════════════════════════════
-        const panel = id => document.getElementById(`panel-${id}`);
+        const panel     = id => document.getElementById(`panel-${id}`);
         const setStatus = (id, txt) => { const el = document.getElementById(`status-${id}`); if (el) el.textContent = txt; };
 
         function resetStatus(delay) {
@@ -1301,22 +1154,14 @@ Réponds UNIQUEMENT avec la traduction. Aucune explication. Aucun guillemet.`
         function bindBtn(btnId, mode) {
             const btn = document.getElementById(btnId);
             if (!btn) return;
-            
-            log("Liaison bouton: " + btnId);
             btn.addEventListener('contextmenu', e => e.preventDefault());
 
             const onStart = (e) => {
                 if (e.type === 'mousedown' && e.button !== 0) return;
                 e.preventDefault();
-                log("Appui détecté sur " + mode);
                 startRecording(mode);
             };
-
-            const onStop = (e) => {
-                e.preventDefault();
-                log("Relâchement détecté sur " + mode);
-                stopRecording(mode);
-            };
+            const onStop = (e) => { e.preventDefault(); stopRecording(mode); };
 
             btn.addEventListener('touchstart', onStart, { passive: false });
             btn.addEventListener('touchend', onStop, { passive: false });
@@ -1325,6 +1170,10 @@ Réponds UNIQUEMENT avec la traduction. Aucune explication. Aucun guillemet.`
             btn.addEventListener('mouseup', onStop);
             btn.addEventListener('mouseleave', () => { if (activeMode === mode) stopRecording(mode); });
         }
+
+        // Replay via addEventListener (plus fiable que onclick sur mobile)
+        document.getElementById('replay-fr').addEventListener('click', () => replayAudio('fr'));
+        document.getElementById('replay-vn').addEventListener('click', () => replayAudio('vn'));
 
         bindBtn('btn-fr', 'fr');
         bindBtn('btn-vn', 'vn');
