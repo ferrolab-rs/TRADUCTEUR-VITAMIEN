@@ -909,9 +909,10 @@ async function processAudio() {
     }
 
     let original = '', translation = '', audioData = null;
+    const isFR = mode === 'fr';
 
     try {
-        // STT — Whisper
+        // ── ÉTAPE 1 : STT — on ne peut pas faire mieux, on doit attendre la transcription
         const base64Audio = await new Promise(resolve => {
             const r = new FileReader();
             r.onloadend = () => resolve(r.result.split(',')[1]);
@@ -937,12 +938,18 @@ async function processAudio() {
         if (!stt?.trim()) throw new Error('Transcription vide');
         original = stt.trim();
 
-        // Traduction — Gemini
-        const isFR = mode === 'fr';
+        // ── ÉTAPES 2+3 PARALLÈLES : Traduction → dès qu'elle arrive, TTS démarre immédiatement
+        // Le TTS est une promesse qui se résout en chaîne dès que la traduction est connue
         const srcLang = isFR ? 'français' : 'vietnamien';
         const tgtLang = isFR ? 'vietnamien' : 'français';
+        const ttsLang = isFR ? 'vn' : 'fr';
 
-        const r2 = await fetch(`${OR_URL}/chat/completions`, {
+        // On crée une promesse TTS qui démarre sans attendre ici
+        let resolveTTS, rejectTTS;
+        const ttsPromise = new Promise((res, rej) => { resolveTTS = res; rejectTTS = rej; });
+
+        // Traduction — dès qu'elle répond, on lance le TTS sans délai
+        const translationPromise = fetch(`${OR_URL}/chat/completions`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${API_KEY}`,
@@ -964,15 +971,20 @@ Réponds UNIQUEMENT avec la traduction. Aucune explication. Aucun guillemet.`
                     { role: 'user', content: original }
                 ]
             })
+        }).then(async r2 => {
+            if (!r2.ok) throw new Error(`Gemini ${r2.status}`);
+            const { choices } = await r2.json();
+            const t = choices[0].message.content.trim();
+            // ← TTS démarre ici, immédiatement après la traduction, sans passer par le fil principal
+            speakGetData(t, ttsLang).then(resolveTTS).catch(() => resolveTTS(null));
+            return t;
         });
-        if (!r2.ok) throw new Error(`Gemini ${r2.status}`);
-        const { choices } = await r2.json();
-        translation = choices[0].message.content.trim();
 
-        // TTS
-        audioData = await speakGetData(translation, isFR ? 'vn' : 'fr');
+        // On attend les deux en parallèle — traduction et TTS se chevauchent
+        [translation, audioData] = await Promise.all([translationPromise, ttsPromise]);
+
         if (audioData) {
-            lastAudio[isFR ? 'vn' : 'fr'] = audioData;
+            lastAudio[ttsLang] = audioData;
             playAudio(audioData);
         } else {
             const u = new SpeechSynthesisUtterance(translation);
@@ -990,8 +1002,8 @@ Réponds UNIQUEMENT avec la traduction. Aucune explication. Aucun guillemet.`
 
     finalizeGroup(mode, original, translation, audioData);
     wrap(mode).classList.remove('processing');
-    setStatus(mode, mode === 'fr' ? '✓ Traduit' : '✓ Đã dịch');
-    setTimeout(() => setStatus(mode, mode === 'fr' ? 'Maintenir' : 'Giữ để nói'), 3500);
+    setStatus(mode, isFR ? '✓ Traduit' : '✓ Đã dịch');
+    setTimeout(() => setStatus(mode, isFR ? 'Maintenir' : 'Giữ để nói'), 3500);
     activeMode = null;
 }
 
