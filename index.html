@@ -167,22 +167,49 @@
         }
         .reset-btn:active { color: rgba(238,242,255,0.7); }
 
-        .clear-btn {
-            background: rgba(255,255,255,0.05);
+        /* Bouton poubelle central entre les deux micros */
+        .clear-center {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 7px; flex-shrink: 0;
+        }
+        .clear-center-label {
+            font-size: 0.50rem; letter-spacing: 1.5px;
+            color: transparent; font-family: 'Cinzel', serif;
+            transition: color 0.4s; text-transform: uppercase;
+        }
+        .clear-center.visible .clear-center-label { color: var(--muted); }
+
+        .btn-clear-center {
+            width: 54px; height: 54px; border-radius: 50%;
+            background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px; color: var(--muted);
-            font-size: 0.72rem; cursor: pointer;
-            padding: 6px 11px; touch-action: auto;
-            transition: background 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
-            display: flex; align-items: center; gap: 5px;
+            color: rgba(238,242,255,0.28);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; touch-action: auto;
+            transition: background 0.2s, color 0.2s, border-color 0.2s,
+                        transform 0.15s, opacity 0.35s, box-shadow 0.2s;
+            opacity: 0; pointer-events: none;
         }
-        .clear-btn:active {
-            background: rgba(255,80,80,0.12);
+        .btn-clear-center svg {
+            width: 20px; height: 20px; fill: none;
+            stroke: currentColor; stroke-width: 1.8;
+            stroke-linecap: round; stroke-linejoin: round;
+        }
+        .clear-center.visible .btn-clear-center {
+            opacity: 1; pointer-events: auto;
+        }
+        .btn-clear-center:active {
+            transform: scale(0.87);
+            background: rgba(220,38,38,0.14);
+            border-color: rgba(220,38,38,0.4);
             color: var(--vn-light);
-            border-color: rgba(220,38,38,0.3);
+            box-shadow: 0 0 16px rgba(220,38,38,0.3);
         }
-        .clear-btn svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2.2; flex-shrink: 0; }
-        .clear-btn.hidden { opacity: 0; pointer-events: none; }
+        .clear-status {
+            font-size: 0.58rem; letter-spacing: 1px;
+            color: transparent; min-height: 12px;
+        }
 
         /* ══ CHAT ZONE ══ */
         #chat {
@@ -421,11 +448,7 @@
         .mic-btn-wrap.recording .mic-status { color: rgba(238,242,255,0.75); }
 
         /* Séparateur central */
-        .controls-divider {
-            width: 1px; height: 70px;
-            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.12), transparent);
-            flex-shrink: 0;
-        }
+        /* controls-divider replaced */
 
         /* ══ WAVEFORM ══ */
         .wave-canvas {
@@ -491,13 +514,7 @@
             <span class="header-title">PONT DE LUMIÈRE</span>
         </div>
         <span class="header-flags">🇫🇷 · 🇻🇳</span>
-        <div style="display:flex;align-items:center;gap:6px;">
-            <button class="clear-btn hidden" id="btn-clear" onclick="clearChat()" aria-label="Effacer la conversation">
-                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-                Effacer
-            </button>
-            <button class="reset-btn" onclick="resetKey()">⚙ CLÉ</button>
-        </div>
+        <button class="reset-btn" onclick="resetKey()">⚙ CLÉ</button>
     </div>
 
     <!-- Chat -->
@@ -532,7 +549,19 @@
             <span class="mic-status" id="status-fr">Maintenir</span>
         </div>
 
-        <div class="controls-divider"></div>
+        <!-- Poubelle centrale -->
+        <div class="clear-center" id="clear-center-wrap">
+            <div class="clear-center-label">clear</div>
+            <button class="btn-clear-center" id="btn-clear" onclick="clearChat()" aria-label="Effacer la conversation">
+                <svg viewBox="0 0 24 24">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                    <path d="M10 11v6M14 11v6"/>
+                    <path d="M9 6V4h6v2"/>
+                </svg>
+            </button>
+            <span class="clear-status"></span>
+        </div>
 
         <!-- VN -->
         <div class="mic-btn-wrap" id="wrap-vn">
@@ -658,8 +687,8 @@ function removePlaceholder() {
     const p = document.getElementById('placeholder');
     if (p) {
         p.remove();
-        const cb = document.getElementById('btn-clear');
-        if (cb) cb.classList.remove('hidden');
+        const wrap = document.getElementById('clear-center-wrap');
+        if (wrap) wrap.classList.add('visible');
     }
 }
 
@@ -1042,8 +1071,8 @@ function clearChat() {
         </div>`;
     lastAudio = { fr: null, vn: null };
     if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-    const cb = document.getElementById('btn-clear');
-    if (cb) cb.classList.add('hidden');
+    const wrap = document.getElementById('clear-center-wrap');
+    if (wrap) wrap.classList.remove('visible');
 }
 
 // ══════════════════════════════════════
