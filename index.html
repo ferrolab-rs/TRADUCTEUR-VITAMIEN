@@ -37,6 +37,13 @@
             -webkit-user-select: none;
         }
 
+        /* Sélection de texte autorisée dans les bulles */
+        .bubble {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+            cursor: text;
+        }
+
         /* ══ AURORA BG ══ */
         .aurora {
             position: fixed; inset: 0; pointer-events: none; z-index: 0;
@@ -159,6 +166,23 @@
             transition: color 0.3s;
         }
         .reset-btn:active { color: rgba(238,242,255,0.7); }
+
+        .clear-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; color: var(--muted);
+            font-size: 0.72rem; cursor: pointer;
+            padding: 6px 11px; touch-action: auto;
+            transition: background 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .clear-btn:active {
+            background: rgba(255,80,80,0.12);
+            color: var(--vn-light);
+            border-color: rgba(220,38,38,0.3);
+        }
+        .clear-btn svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2.2; flex-shrink: 0; }
+        .clear-btn.hidden { opacity: 0; pointer-events: none; }
 
         /* ══ CHAT ZONE ══ */
         #chat {
@@ -467,7 +491,13 @@
             <span class="header-title">PONT DE LUMIÈRE</span>
         </div>
         <span class="header-flags">🇫🇷 · 🇻🇳</span>
-        <button class="reset-btn" onclick="resetKey()">⚙ CLÉ</button>
+        <div style="display:flex;align-items:center;gap:6px;">
+            <button class="clear-btn hidden" id="btn-clear" onclick="clearChat()" aria-label="Effacer la conversation">
+                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                Effacer
+            </button>
+            <button class="reset-btn" onclick="resetKey()">⚙ CLÉ</button>
+        </div>
     </div>
 
     <!-- Chat -->
@@ -626,7 +656,11 @@ let loadingGroup = null;
 
 function removePlaceholder() {
     const p = document.getElementById('placeholder');
-    if (p) p.remove();
+    if (p) {
+        p.remove();
+        const cb = document.getElementById('btn-clear');
+        if (cb) cb.classList.remove('hidden');
+    }
 }
 
 function addLoadingBubble(mode) {
@@ -991,6 +1025,26 @@ function bindBtn(btnId, mode) {
 
 bindBtn('btn-fr', 'fr');
 bindBtn('btn-vn', 'vn');
+
+// ══════════════════════════════════════
+//  CLEAR CONVERSATION
+// ══════════════════════════════════════
+function clearChat() {
+    const chat = document.getElementById('chat');
+    chat.innerHTML = `
+        <div class="chat-placeholder" id="placeholder">
+            <div class="big-flags">🇫🇷 · 🇻🇳</div>
+            <p>Appuie sur ton bouton et parle.<br>La traduction apparaîtra ici.</p>
+            <div class="hint">
+                <span class="hint-pill hint-pill-fr">🇫🇷 Maintenir</span>
+                <span class="hint-pill hint-pill-vn">🇻🇳 Giữ</span>
+            </div>
+        </div>`;
+    lastAudio = { fr: null, vn: null };
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    const cb = document.getElementById('btn-clear');
+    if (cb) cb.classList.add('hidden');
+}
 
 // ══════════════════════════════════════
 //  INIT
