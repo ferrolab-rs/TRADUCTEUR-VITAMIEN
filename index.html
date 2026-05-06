@@ -625,12 +625,8 @@ async function showApp() {
     document.getElementById("screen-key").style.display = "none";
     document.getElementById("app").style.display = "flex";
     drawIdle('fr'); drawIdle('vn');
-    try {
-        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        new Audio().play().catch(() => {});
-    } catch(e) {
-        showToast('⚠ Micro inaccessible — vérifie les permissions');
-    }
+    // Déverrouillage audio Android sans garder le micro ouvert
+    new Audio().play().catch(() => {});
 }
 
 function resetKey() {
@@ -735,18 +731,19 @@ function finalizeGroup(mode, original, translation, audioData) {
 
     chat.appendChild(grp);
 
-    // Liaison replay
+    // Replay — s'active automatiquement dès que l'audio TTS est disponible
     const btn = grp.querySelector('.replay-inline');
     const tLang = mode === 'fr' ? 'vn' : 'fr';
-    if (audioData) {
-        btn.addEventListener('click', () => {
-            if (currentAudio) currentAudio.pause();
-            currentAudio = new Audio(audioData);
-            currentAudio.play().catch(() => {});
-        });
-    } else {
-        btn.style.display = 'none';
-    }
+    btn.style.opacity = '0.25';
+    btn.addEventListener('click', () => {
+        if (!lastAudio[tLang]) return;
+        if (currentAudio) currentAudio.pause();
+        currentAudio = new Audio(lastAudio[tLang]);
+        currentAudio.play().catch(() => {});
+    });
+    const enableReplay = setInterval(() => {
+        if (lastAudio[tLang]) { btn.style.opacity = '1'; clearInterval(enableReplay); }
+    }, 150);
 
     chat.scrollTop = chat.scrollHeight;
 }
@@ -890,6 +887,12 @@ function stopRecording(mode) {
     wrap(mode).classList.add('processing');
     setStatus(mode, mode === 'fr' ? 'Traduction…' : 'Đang dịch…');
     updateLoadingLabel(mode, mode === 'fr' ? '…traduction' : '…đang dịch');
+
+    // Libère le micro immédiatement — ne bloque plus les autres apps
+    if (micStream) {
+        micStream.getTracks().forEach(t => t.stop());
+        micStream = null;
+    }
 }
 
 // ══════════════════════════════════════
